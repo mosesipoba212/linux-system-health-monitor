@@ -1,0 +1,237 @@
+:root {
+  --bg: #0f141b;
+  --card: #1b2430;
+  --card-alt: #202c3a;
+  --text: #dbe6f2;
+  --muted: #8ea0b6;
+  --ok: #36d399;
+  --warn: #f6c85f;
+  --critical: #f76e6e;
+  --border: #304053;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+  background: radial-gradient(circle at top right, #1b2a3b, var(--bg) 45%);
+  color: var(--text);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border);
+  background: rgba(15, 20, 27, 0.85);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.pill {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+  color: var(--text);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  padding: 1rem 1.5rem 1.5rem;
+}
+
+.card {
+  background: linear-gradient(160deg, var(--card), var(--card-alt));
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.9rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.card h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+  color: #f1f6fd;
+}
+
+.system-info-card {
+  background: linear-gradient(160deg, #233044, #1a2430 70%);
+}
+
+.system-info-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.system-info-subtitle {
+  margin: 0.15rem 0 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.platform-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 0.28rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.platform-badge.macos,
+.platform-badge.darwin {
+  background: rgba(83, 182, 255, 0.16);
+  border-color: rgba(83, 182, 255, 0.35);
+}
+
+.platform-badge.linux {
+  background: rgba(54, 211, 153, 0.14);
+  border-color: rgba(54, 211, 153, 0.35);
+}
+
+.platform-badge.windows {
+  background: rgba(246, 200, 95, 0.14);
+  border-color: rgba(246, 200, 95, 0.35);
+}
+
+.system-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.7rem;
+}
+
+.system-info-item {
+  padding: 0.75rem 0.8rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(0, 0, 0, 0.14);
+}
+
+.system-info-label {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.system-info-value {
+  display: block;
+  color: var(--text);
+  font-size: 0.94rem;
+  word-break: break-word;
+}
+
+.chart {
+  width: 100%;
+  min-height: 250px;
+}
+
+.chart-note {
+  margin: 0.5rem 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.span-2 {
+  grid-column: span 2;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+}
+
+th,
+td {
+  padding: 0.45rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+th {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  font-size: 0.9rem;
+}
+
+.item {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.6rem;
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.item.ok {
+  border-left: 4px solid var(--ok);
+}
+
+.item.warning {
+  border-left: 4px solid var(--warn);
+}
+
+.item.critical,
+.item.error {
+  border-left: 4px solid var(--critical);
+}
+
+.empty {
+  color: var(--muted);
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .span-2 {
+    grid-column: span 1;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .system-info-grid {
+    grid-template-columns: 1fr;
+  }
+}

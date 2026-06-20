@@ -1,0 +1,8 @@
+psutil>=5.9.0
+matplotlib>=3.7.0
+numpy>=1.24.0
+pytest>=7.0.0
+Flask>=3.0.0
+plotly>=5.24.0
+# Optional: required only for native Windows Event Log collection.
+pywin32>=306; platform_system == "Windows"

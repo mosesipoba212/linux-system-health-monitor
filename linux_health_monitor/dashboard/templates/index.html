@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>System Health Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+</head>
+<body>
+  <header class="header">
+    <h1>Linux System Health Monitor</h1>
+    <div class="meta">
+      <span id="last-updated">Waiting for data...</span>
+      <span class="pill">Refresh: {{ interval_seconds }}s</span>
+    </div>
+  </header>
+
+  <main class="grid">
+    <section class="card span-2 system-info-card">
+      <div class="system-info-header">
+        <div>
+          <h2>System Info</h2>
+          <p class="system-info-subtitle">Live host details and data source status for this deployment.</p>
+        </div>
+        <span id="platform-badge" class="platform-badge">Loading...</span>
+      </div>
+      <div id="system-info-grid" class="system-info-grid"></div>
+    </section>
+
+    <section class="card">
+      <h2>CPU Usage</h2>
+      <div id="cpu-gauge" class="chart"></div>
+    </section>
+
+    <section class="card">
+      <h2>Memory Usage</h2>
+      <div id="memory-gauge" class="chart"></div>
+    </section>
+
+    <section class="card span-2">
+      <h2>Disk Usage By Partition</h2>
+      <div id="disk-chart" class="chart"></div>
+      <p id="disk-chart-note" class="chart-note" title="Showing top partitions by usage. System/snapshot volumes hidden for clarity.">
+        Showing top partitions by usage. System/snapshot volumes hidden for clarity.
+      </p>
+    </section>
+
+    <section class="card span-2">
+      <h2>Network I/O (Last 30 Points)</h2>
+      <div id="network-chart" class="chart"></div>
+    </section>
+
+    <section class="card">
+      <h2>Top 5 CPU Processes</h2>
+      <table>
+        <thead>
+          <tr><th>PID</th><th>Name</th><th>CPU %</th><th>Mem %</th></tr>
+        </thead>
+        <tbody id="top-cpu-body"></tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>Top 5 Memory Processes</h2>
+      <table>
+        <thead>
+          <tr><th>PID</th><th>Name</th><th>CPU %</th><th>Mem %</th></tr>
+        </thead>
+        <tbody id="top-memory-body"></tbody>
+      </table>
+    </section>
+
+    <section class="card span-2">
+      <h2>Active Anomalies</h2>
+      <div id="anomalies" class="list"></div>
+    </section>
+
+    <section class="card span-2">
+      <h2>Recent Log Errors (Last 10)</h2>
+      <div id="recent-logs" class="list"></div>
+    </section>
+  </main>
+
+  <script>
+    window.DASHBOARD_REFRESH_SECONDS = {{ interval_seconds }};
+  </script>
+  <script src="{{ url_for('static', filename='dashboard.js') }}"></script>
+</body>
+</html>

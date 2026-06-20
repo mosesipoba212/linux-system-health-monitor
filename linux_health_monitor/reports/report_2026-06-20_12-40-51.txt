@@ -1,0 +1,73 @@
+================================================================================
+LINUX SYSTEM HEALTH MONITOR - Report v1.0.0
+================================================================================
+Generated: 2026-06-20T12:40:52.878832 UTC
+
+CURRENT SYSTEM SNAPSHOT
+--------------------------------------------------------------------------------
+CPU Usage:              28.8%
+CPU Load Average:       1m=4.21, 5m=3.51, 15m=5.78
+Memory Usage:           85.3% (2.9 GB/8.0 GB)
+Swap Usage:             11.3 GB/12.0 GB
+
+DISK USAGE BY PARTITION
+--------------------------------------------------------------------------------
+/                               17.4% (16.6 GB/228.3 GB)
+/System/Volumes/VM              13.2% (12.0 GB/228.3 GB)
+/System/Volumes/Preboot         15.9% (14.9 GB/228.3 GB)
+/System/Volumes/Update           0.9% (759.8 MB/228.3 GB)
+/System/Volumes/xarts            1.2% (6.0 MB/500.0 MB)
+/System/Volumes/iSCPreboot       1.2% (5.7 MB/500.0 MB)
+/System/Volumes/Hardware         0.1% (724.0 KB/500.0 MB)
+/System/Volumes/Data            56.5% (102.4 GB/228.3 GB)
+/private/var/folders/s6/vyn118gj3fjft8mz2k6d3vfw0000gn/X/4E1E14ED-CF18-5C4F-9325-DDAAA460A73E  21.8% (44.8 GB/228.3 GB)
+/private/var/folders/s6/vyn118gj3fjft8mz2k6d3vfw0000gn/X/0231F0E2-9338-53D7-B514-899665D3912E  26.7% (54.4 GB/228.3 GB)
+/private/var/folders/s6/vyn118gj3fjft8mz2k6d3vfw0000gn/X/32469B7B-C162-51D2-8E55-F7D9F452F60A  40.1% (80.5 GB/228.3 GB)
+/private/var/folders/s6/vyn118gj3fjft8mz2k6d3vfw0000gn/X/3FF87C89-0149-5251-8B9E-337E2D3D6FBE  41.4% (82.8 GB/228.3 GB)
+/System/Volumes/Update/SFR/mnt1  24.2% (1.2 GB/5.0 GB)
+/private/var/folders/s6/vyn118gj3fjft8mz2k6d3vfw0000gn/X/5C695D52-AEFE-5660-98CF-A05653396E00  52.9% (96.1 GB/228.3 GB)
+/private/var/folders/s6/vyn118gj3fjft8mz2k6d3vfw0000gn/X/2EA5CFFA-8500-5FE0-A249-00CC25D8BF59  54.9% (97.5 GB/228.3 GB)
+/private/var/folders/s6/vyn118gj3fjft8mz2k6d3vfw0000gn/X/487A91E2-01A2-50A3-8F22-449E590E13B0  55.3% (102.5 GB/228.3 GB)
+/private/var/folders/s6/vyn118gj3fjft8mz2k6d3vfw0000gn/X/1B2D1BB4-B206-5CE8-98C9-461956728C82  55.2% (101.2 GB/228.3 GB)
+/System/Volumes/Update/mnt1     17.4% (16.6 GB/228.3 GB)
+
+TOP PROCESSES BY CPU
+--------------------------------------------------------------------------------
+       PID NAME                           CPU %      MEM %
+--------------------------------------------------------------------------------
+
+TOP PROCESSES BY MEMORY
+--------------------------------------------------------------------------------
+       PID NAME                           CPU %      MEM %
+--------------------------------------------------------------------------------
+
+RECENT ANOMALIES
+--------------------------------------------------------------------------------
+[WARNING] cpu_core_2: CPU core 2 usage 88.9% exceeds threshold 85%
+[WARNING] cpu_core_2: CPU core 2 usage 90.0% exceeds threshold 85%
+[WARNING] cpu_core_1: CPU core 1 usage 88.9% exceeds threshold 85%
+[WARNING] cpu_core_0: CPU core 0 usage 90.0% exceeds threshold 85%
+[WARNING] cpu_core_0: CPU core 0 usage 88.9% exceeds threshold 85%
+[WARNING] cpu_core_3: CPU core 3 usage 90.0% exceeds threshold 85%
+[WARNING] cpu_core_2: CPU core 2 usage 90.9% exceeds threshold 85%
+[WARNING] cpu_core_1: CPU core 1 usage 90.0% exceeds threshold 85%
+[WARNING] cpu_core_0: CPU core 0 usage 90.9% exceeds threshold 85%
+[WARNING] cpu_core_3: CPU core 3 usage 90.9% exceeds threshold 85%
+[CRITICAL] cpu_core_3: CPU core 3 usage 100.0% exceeds threshold 85%
+[CRITICAL] cpu_core_2: CPU core 2 usage 100.0% exceeds threshold 85%
+[CRITICAL] cpu_core_1: CPU core 1 usage 100.0% exceeds threshold 85%
+[CRITICAL] cpu_core_0: CPU core 0 usage 100.0% exceeds threshold 85%
+[WARNING] cpu_core_3: CPU core 3 usage 90.0% exceeds threshold 85%
+[WARNING] cpu_core_2: CPU core 2 usage 90.0% exceeds threshold 85%
+[WARNING] cpu_core_1: CPU core 1 usage 90.9% exceeds threshold 85%
+[CRITICAL] cpu_core_3: CPU core 3 usage 100.0% exceeds threshold 85%
+[CRITICAL] cpu_core_2: CPU core 2 usage 100.0% exceeds threshold 85%
+[CRITICAL] cpu_core_1: CPU core 1 usage 100.0% exceeds threshold 85%
+
+24-HOUR TRENDS
+--------------------------------------------------------------------------------
+cpu_percent          Min:  13.7 Max: 100.0 Avg:  33.4 StdDev:  16.6 [→ STABLE]
+memory_percent       Min:  81.6 Max:  85.6 Avg:  84.7 StdDev:   0.6 [→ STABLE]
+
+================================================================================
+End of Report
