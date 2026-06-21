@@ -38,12 +38,27 @@
       <div id="memory-gauge" class="chart"></div>
     </section>
 
-    <section class="card span-2">
-      <h2>Disk Usage By Partition</h2>
-      <div id="disk-chart" class="chart"></div>
-      <p id="disk-chart-note" class="chart-note" title="Showing top partitions by usage. System/snapshot volumes hidden for clarity.">
-        Showing top partitions by usage. System/snapshot volumes hidden for clarity.
-      </p>
+    <section class="card span-2 disk-storage-card" id="disk-storage-management">
+      <div class="disk-storage-header">
+        <div>
+          <h2>Disk &amp; Storage</h2>
+          <p class="disk-storage-subtitle">Read-only visibility into partition usage and storage category trends.</p>
+        </div>
+      </div>
+
+      <div class="disk-storage-panel">
+        <h3>Disk Usage By Partition</h3>
+        <div id="disk-chart" class="chart disk-chart"></div>
+        <p id="disk-chart-note" class="chart-note" title="Showing top partitions by usage. System/snapshot volumes hidden for clarity.">
+          Showing top partitions by usage. System/snapshot volumes hidden for clarity.
+        </p>
+      </div>
+
+      <div class="disk-storage-panel">
+        <h3>Storage Breakdown by Category</h3>
+        <div id="storage-breakdown-chart" class="chart"></div>
+        <div id="storage-breakdown-list" class="list"></div>
+      </div>
     </section>
 
     <section class="card span-2">
@@ -80,8 +95,8 @@
       <h2>Recent Log Errors (Last 10)</h2>
       <div id="recent-logs" class="list"></div>
     </section>
-  </main>
 
+  </main>
   <script>
     window.DASHBOARD_REFRESH_SECONDS = {{ interval_seconds }};
   </script>

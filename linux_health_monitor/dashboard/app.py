@@ -19,6 +19,7 @@ from linux_health_monitor.collector.logs import parse_syslog
 from linux_health_monitor.collector.memory import get_memory_metrics
 from linux_health_monitor.collector.network import get_network_metrics
 from linux_health_monitor.collector.processes import get_top_processes
+from linux_health_monitor.collector.storage_breakdown import collect_storage_breakdown
 from linux_health_monitor.config import DB_PATH
 from linux_health_monitor.models import MetricSnapshot, ProcessInfo
 from linux_health_monitor.parser.normaliser import normalize_snapshot
@@ -34,6 +35,14 @@ from linux_health_monitor.storage.database import HealthMonitorDB
 from linux_health_monitor.system_info import get_system_info
 
 logger = logging.getLogger(__name__)
+
+STORAGE_BREAKDOWN_CACHE_TTL_SECONDS = 300
+
+_storage_state_lock = threading.Lock()
+_storage_cache: dict[str, Any] = {
+    "payload": None,
+    "cached_at": None,
+}
 
 
 def create_app(interval_seconds: int = 5) -> Flask:
@@ -150,6 +159,8 @@ def _build_dashboard_payload(interval_seconds: int) -> dict[str, Any]:
     for item in active_anomalies:
         recent_anomaly_messages[item["message"]] = item
 
+    storage_breakdown = _build_storage_breakdown_payload(snapshot.disk_partitions)
+
     return {
         "generated_at": datetime.utcnow().isoformat(),
         "has_data": True,
@@ -159,6 +170,7 @@ def _build_dashboard_payload(interval_seconds: int) -> dict[str, Any]:
         "memory_percent": snapshot.memory_percent,
         "disk_usage": disk_items,
         "disk_chart_note": "Showing top partitions by usage. System/snapshot volumes hidden for clarity.",
+        "storage_breakdown": storage_breakdown,
         "network": history,
         "top_cpu_processes": top_cpu,
         "top_memory_processes": top_memory,
@@ -409,3 +421,41 @@ def _derive_mount_label(mount: str) -> str:
         cleaned = cleaned.title()
 
     return cleaned
+
+
+def _build_storage_breakdown_payload(disk_partitions: dict[str, dict[str, Any]], force_refresh: bool = False) -> dict[str, Any]:
+    breakdown = _ensure_storage_breakdown_cache(disk_partitions=disk_partitions, force_refresh=force_refresh)
+    with _storage_state_lock:
+        cached_at = _storage_cache.get("cached_at")
+
+    cache_age_seconds: int | None = None
+    if isinstance(cached_at, datetime):
+        cache_age_seconds = max(int((datetime.utcnow() - cached_at).total_seconds()), 0)
+
+    return {
+        **breakdown,
+        "cache_ttl_seconds": STORAGE_BREAKDOWN_CACHE_TTL_SECONDS,
+        "cache_age_seconds": cache_age_seconds,
+    }
+
+
+def _ensure_storage_breakdown_cache(disk_partitions: dict[str, dict[str, Any]], force_refresh: bool = False) -> dict[str, Any]:
+    with _storage_state_lock:
+        cached_payload = _storage_cache.get("payload")
+        cached_at = _storage_cache.get("cached_at")
+        cache_is_fresh = (
+            cached_payload is not None
+            and isinstance(cached_at, datetime)
+            and (datetime.utcnow() - cached_at) < timedelta(seconds=STORAGE_BREAKDOWN_CACHE_TTL_SECONDS)
+        )
+        if cache_is_fresh and not force_refresh:
+            return dict(_storage_cache["payload"])
+
+    breakdown = collect_storage_breakdown(disk_partitions)
+    breakdown["generated_at"] = datetime.utcnow().isoformat()
+
+    with _storage_state_lock:
+        _storage_cache["payload"] = breakdown
+        _storage_cache["cached_at"] = datetime.utcnow()
+
+    return dict(breakdown)

@@ -2,6 +2,169 @@
 
 A production-style Python application for live system monitoring, anomaly detection, historical reporting, and a browser dashboard.
 
+## Getting Started
+
+### Prerequisites (all platforms)
+
+- Python 3.10 or higher installed
+- Git installed
+- A terminal (Terminal on macOS/Linux, PowerShell on Windows)
+
+### macOS
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/mosesipoba212/linux-system-health-monitor.git
+cd linux-system-health-monitor
+```
+
+2. Create and activate a virtual environment:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+3. Install dependencies:
+
+```bash
+pip install -r linux_health_monitor/requirements.txt
+```
+
+4. Run a single test collection:
+
+```bash
+python3 -m linux_health_monitor.main --collect-once
+```
+
+5. Launch the live dashboard:
+
+```bash
+python3 -m linux_health_monitor.main --dashboard
+```
+
+6. Open your browser to:
+
+```text
+http://127.0.0.1:5000
+```
+
+### Windows (PowerShell)
+
+1. Clone the repository:
+
+```powershell
+git clone https://github.com/mosesipoba212/linux-system-health-monitor.git
+cd linux-system-health-monitor
+```
+
+2. Create and activate a virtual environment:
+
+```powershell
+python -m venv .venv
+.venv\Scripts\activate
+```
+
+If you get an execution policy error, run this first, then retry activation:
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+```
+
+3. Install dependencies:
+
+```powershell
+pip install -r linux_health_monitor/requirements.txt
+```
+
+4. Run a single test collection:
+
+```powershell
+python -m linux_health_monitor.main --collect-once
+```
+
+5. Launch the live dashboard:
+
+```powershell
+python -m linux_health_monitor.main --dashboard
+```
+
+6. Open your browser to:
+
+```text
+http://127.0.0.1:5000
+```
+
+### Linux (Ubuntu/Debian/RHEL/Fedora)
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/mosesipoba212/linux-system-health-monitor.git
+cd linux-system-health-monitor
+```
+
+2. Create and activate a virtual environment:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+3. Install dependencies:
+
+```bash
+pip install -r linux_health_monitor/requirements.txt
+```
+
+4. Run a single test collection:
+
+```bash
+python3 -m linux_health_monitor.main --collect-once
+```
+
+5. Launch the live dashboard:
+
+```bash
+python3 -m linux_health_monitor.main --dashboard
+```
+
+6. Open your browser to:
+
+```text
+http://127.0.0.1:5000
+```
+
+### Troubleshooting
+
+- `ModuleNotFoundError: No module named 'linux_health_monitor'`
+	Cause: Running `main.py` directly from inside the `linux_health_monitor` folder.
+	Fix: Go to the parent folder, then run as a module:
+
+```bash
+cd ..
+python -m linux_health_monitor.main --dashboard
+```
+
+- `pip` not recognized on Windows
+	Cause: Virtual environment is not activated.
+	Fix: Activate it again before installing dependencies:
+
+```powershell
+.venv\Scripts\activate
+pip install -r linux_health_monitor/requirements.txt
+```
+
+- macOS prompts for Xcode Command Line Tools during `python3 -m venv`
+	Cause: macOS needs developer tools installed.
+	Fix: Click Install, wait for completion, then retry:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
 ## What it does
 
 - Collects CPU, memory, disk, network, and process metrics from live `psutil` calls.
@@ -13,7 +176,7 @@ A production-style Python application for live system monitoring, anomaly detect
 
 ## Requirements
 
-- Python 3.8 or newer
+- Python 3.10 or newer
 - `psutil`
 - `Flask`
 - `plotly`
@@ -65,6 +228,7 @@ The dashboard shows:
 - CPU usage
 - Memory usage
 - Disk usage by partition
+- Storage breakdown by category (Games, Applications/Programs, Documents, Photos/Videos/Media, Downloads, System/OS)
 - Network I/O history
 - Top CPU and memory processes
 - Active anomalies

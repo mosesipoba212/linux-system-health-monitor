@@ -12,7 +12,6 @@ Command-line interface supporting three modes:
 import argparse
 import logging
 import sys
-from pathlib import Path
 
 from linux_health_monitor.config import (
     APP_NAME,

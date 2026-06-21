@@ -168,6 +168,44 @@ body {
   grid-column: span 2;
 }
 
+.disk-storage-card {
+  border-color: rgba(83, 182, 255, 0.38);
+}
+
+.disk-storage-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.9rem;
+}
+
+.disk-storage-header h2 {
+  margin-bottom: 0.2rem;
+}
+
+.disk-storage-subtitle {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.disk-storage-panel {
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.disk-storage-panel h3 {
+  margin: 0 0 0.6rem;
+  font-size: 0.92rem;
+  color: #f1f6fd;
+}
+
+.disk-chart {
+  min-height: 210px;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
