@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import platform
+import plistlib
 from pathlib import Path
 from typing import Any
 
@@ -25,6 +26,51 @@ CATEGORY_LABELS = {
     "system": "System/OS",
 }
 
+GAME_NAME_KEYWORDS = [
+    "sims",
+    "minecraft",
+    "fortnite",
+    "roblox",
+    "league of legends",
+    "valorant",
+    "fifa",
+    "call of duty",
+]
+
+NON_GAME_NAME_OVERRIDES = [
+    "microsoft word",
+    "microsoft excel",
+    "microsoft powerpoint",
+    "microsoft outlook",
+    "microsoft teams",
+    "microsoft onenote",
+    "google chrome",
+    "mozilla firefox",
+    "firefox",
+    "safari",
+    "microsoft edge",
+]
+
+GAME_PLATFORM_FOLDER_NAMES_DARWIN = [
+    "Steam",
+    "Epic Games",
+    "Epic",
+    "Battle.net",
+    "Riot Games",
+    "EA",
+    "Ubisoft Connect",
+    "Ubisoft Game Launcher",
+]
+
+GAME_PLATFORM_FOLDER_NAMES_WINDOWS = [
+    "Steam",
+    "Epic Games",
+    "Battle.net",
+    "Riot Games",
+    "EA Games",
+    "Ubisoft Game Launcher",
+]
+
 
 def collect_storage_breakdown(disk_partitions: dict[str, dict[str, Any]], top_n: int = 5) -> dict[str, Any]:
     """Return category totals and top items for dashboard display."""
@@ -33,19 +79,29 @@ def collect_storage_breakdown(disk_partitions: dict[str, dict[str, Any]], top_n:
 
     category_items: dict[str, list[dict[str, Any]]] = {key: [] for key in CATEGORY_ORDER}
 
-    _collect_games(category_items["games"], home, system_name)
-    _collect_applications(category_items["applications"], home, system_name)
+    game_claimed_paths: set[str] = set()
+    _collect_games(category_items["games"], home, system_name, game_claimed_paths)
+    _collect_applications(category_items["applications"], home, system_name, game_claimed_paths)
     _collect_documents(category_items["documents"], home)
     _collect_media(category_items["media"], home)
     _collect_downloads(category_items["downloads"], home)
 
     used_total = int(sum(int(part.get("used", 0)) for part in disk_partitions.values()))
 
+    # Global mutual-exclusivity pass: a path claimed by an earlier category
+    # (games takes priority) is dropped from every later category.
+    seen_paths: set[str] = set()
     category_totals: dict[str, int] = {}
     for key in CATEGORY_ORDER:
         if key == "system":
             continue
-        deduped = _dedupe_items(category_items[key])
+        deduped = []
+        for item in _dedupe_items(category_items[key]):
+            path = str(item["path"])
+            if path in seen_paths:
+                continue
+            seen_paths.add(path)
+            deduped.append(item)
         category_items[key] = deduped
         category_totals[key] = int(sum(item["size_bytes"] for item in deduped))
 
@@ -80,62 +136,116 @@ def collect_storage_breakdown(disk_partitions: dict[str, dict[str, Any]], top_n:
     }
 
 
-def _collect_games(items: list[dict[str, Any]], home: Path, system_name: str) -> None:
-    if system_name == "windows":
-        roots = [
-            Path(os.environ.get("ProgramFiles", "")) / "Steam",
-            Path(os.environ.get("ProgramFiles", "")) / "Epic Games",
-            Path(os.environ.get("ProgramFiles", "")) / "Battle.net",
-            Path(os.environ.get("ProgramFiles", "")) / "WindowsApps",
-            Path(os.environ.get("ProgramFiles(x86)", "")) / "Steam",
-            Path(os.environ.get("ProgramFiles(x86)", "")) / "Epic Games",
-            Path(os.environ.get("ProgramFiles(x86)", "")) / "Battle.net",
-            Path(os.environ.get("ProgramFiles(x86)", "")) / "WindowsApps",
-        ]
-    elif system_name == "darwin":
-        roots = [Path("/Applications"), home / "Applications"]
-    else:
-        roots = [home / ".steam", home / ".local" / "share" / "Steam"]
-
-    for root in roots:
+def _collect_games(items: list[dict[str, Any]], home: Path, system_name: str, claimed_paths: set[str]) -> None:
+    # Known game-launcher folders: anything installed under these is a game.
+    for root in _game_platform_roots(home, system_name):
         if not _valid_dir(root):
             continue
-        if system_name == "darwin":
-            # On macOS, treat large application bundles as likely game installs.
-            for item in _top_level_items(root):
-                size = _safe_dir_size(item)
-                if size >= 1024**3:
-                    items.append(_item_payload(item, size))
+        common = root / "steamapps" / "common"
+        scan_root = common if _valid_dir(common) else root
+        for child in _top_level_items(scan_root):
+            size = _safe_dir_size(child)
+            if size <= 0:
+                continue
+            items.append(_item_payload(child, size))
+            claimed_paths.add(str(child))
+
+    # Apps living directly in /Applications (or ~/Applications) are only
+    # games if their name or OS-reported category says so.
+    app_roots = _application_roots(home, system_name)
+    for root in app_roots:
+        if not _valid_dir(root):
             continue
+        for item in _top_level_items(root):
+            path_str = str(item)
+            if path_str in claimed_paths:
+                continue
+            if not _is_game_app(item, system_name):
+                continue
+            size = _safe_dir_size(item)
+            if size > 0:
+                items.append(_item_payload(item, size))
+                claimed_paths.add(path_str)
 
-        size = _safe_dir_size(root)
-        if size > 0:
-            items.append(_item_payload(root, size))
-        for child in _top_level_items(root):
-            child_size = _safe_dir_size(child)
-            if child_size > 0:
-                items.append(_item_payload(child, child_size))
+
+def _collect_applications(
+    items: list[dict[str, Any]], home: Path, system_name: str, claimed_paths: set[str]
+) -> None:
+    for root in _application_roots(home, system_name):
+        if not _valid_dir(root):
+            continue
+        for item in _top_level_items(root):
+            if str(item) in claimed_paths:
+                continue
+            size = _safe_dir_size(item)
+            if size > 0:
+                items.append(_item_payload(item, size))
 
 
-def _collect_applications(items: list[dict[str, Any]], home: Path, system_name: str) -> None:
+def _application_roots(home: Path, system_name: str) -> list[Path]:
     if system_name == "windows":
-        roots = [
+        return [
             Path(os.environ.get("ProgramFiles", "")),
             Path(os.environ.get("ProgramFiles(x86)", "")),
             Path(os.environ.get("LOCALAPPDATA", "")) / "Programs",
         ]
-    elif system_name == "darwin":
-        roots = [Path("/Applications"), home / "Applications"]
-    else:
-        roots = [Path("/opt"), Path("/usr/local"), home / ".local" / "share"]
+    if system_name == "darwin":
+        return [Path("/Applications"), home / "Applications"]
+    return [Path("/opt"), Path("/usr/local"), home / ".local" / "share"]
 
-    for root in roots:
-        if not _valid_dir(root):
+
+def _game_platform_roots(home: Path, system_name: str) -> list[Path]:
+    if system_name == "windows":
+        bases = [Path(os.environ.get("ProgramFiles", "")), Path(os.environ.get("ProgramFiles(x86)", ""))]
+        return [base / name for base in bases for name in GAME_PLATFORM_FOLDER_NAMES_WINDOWS if str(base)]
+    if system_name == "darwin":
+        support = home / "Library" / "Application Support"
+        return [support / name for name in GAME_PLATFORM_FOLDER_NAMES_DARWIN]
+    return [home / ".steam", home / ".local" / "share" / "Steam"]
+
+
+def _is_game_app(path: Path, system_name: str) -> bool:
+    name_lower = path.name.lower()
+    if any(token in name_lower for token in NON_GAME_NAME_OVERRIDES):
+        return False
+    if any(token in name_lower for token in GAME_NAME_KEYWORDS):
+        return True
+    if system_name == "darwin":
+        category = _macos_app_category(path)
+        if category and "game" in category:
+            return True
+    return False
+
+
+def _macos_app_category(app_path: Path) -> str:
+    """Best-effort lookup of an app's OS-reported category/genre on macOS."""
+    candidates = [app_path / "Contents" / "Info.plist"]
+
+    wrapper_dir = app_path / "Wrapper"
+    if _valid_dir(wrapper_dir):
+        for child in _top_level_items(wrapper_dir):
+            if child.suffix == ".app":
+                candidates.append(child / "Info.plist")
+        candidates.append(wrapper_dir / "iTunesMetadata.plist")
+
+    for plist_path in candidates:
+        if not plist_path.is_file():
             continue
-        for item in _top_level_items(root):
-            size = _safe_dir_size(item)
-            if size > 0:
-                items.append(_item_payload(item, size))
+        try:
+            with open(plist_path, "rb") as fh:
+                data = plistlib.load(fh)
+        except Exception:
+            continue
+
+        category = str(data.get("LSApplicationCategoryType", "")).strip().lower()
+        if category:
+            return category
+
+        genre = str(data.get("genre", "")).strip().lower()
+        if genre:
+            return genre
+
+    return ""
 
 
 def _collect_documents(items: list[dict[str, Any]], home: Path) -> None:
